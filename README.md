@@ -15,6 +15,7 @@ Save a place in seconds with just a name and a photo, then find it again in your
 [![Supabase](https://img.shields.io/badge/Supabase-Postgres_·_Auth_·_Storage-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com)
 [![Mapbox](https://img.shields.io/badge/Mapbox-GL_JS-000000?logo=mapbox&logoColor=white)](https://www.mapbox.com)
 [![Tested with Vitest and Playwright](https://img.shields.io/badge/tested_with-Vitest_·_Playwright-6E9F18?logo=vitest&logoColor=white)](#testing)
+[![License: MIT](https://img.shields.io/badge/license-MIT-0F7B8A)](LICENSE)
 
 [Features](#features) · [Quick start](#quick-start) · [Architecture](#architecture) · [Security](#data-model-and-security) · [Testing](#testing) · [Deployment](#deployment)
 
@@ -294,4 +295,6 @@ docs/screenshots/                 Images used in this README
 
 ## License
 
-No open-source licence has been chosen yet, so all rights are reserved by the author. Sample photos remain under their own licences.
+Waymark's source code is released under the [MIT License](LICENSE) © 2026 Abdul Manaf Ali.
+
+The sample photographs in [`public/demo`](public/demo), and the screenshots that show them, are not covered by the MIT License. Each remains under its own Creative Commons licence or in the public domain, as credited in [`src/lib/data/seed.ts`](src/lib/data/seed.ts).
