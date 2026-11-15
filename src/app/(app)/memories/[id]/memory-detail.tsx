@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useId, useState } from "react"
 import Link from "next/link"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
@@ -34,6 +34,7 @@ export function MemoryDetail() {
   const { getMemory, getTrip, trips, deleteMemory, moveMemories } = useData()
   const [confirming, setConfirming] = useState(false)
   const [moving, setMoving] = useState(false)
+  const tripSelectId = useId()
   const memory = getMemory(id)
 
   if (!memory) return <NotFoundState title="We couldn't find that memory" backHref="/journal" backLabel="Back to your journal" />
@@ -99,9 +100,9 @@ export function MemoryDetail() {
             <Row label="Visited">
               <time dateTime={memory.visitedOn}>{formatDate(memory.visitedOn)}</time>
             </Row>
-            <Row label="Trip" htmlFor="move-trip">
+            <Row label="Trip" htmlFor={tripSelectId}>
               <select
-                id="move-trip"
+                id={tripSelectId}
                 value={memory.tripId ?? ""}
                 disabled={moving}
                 onChange={(e) => changeTrip(e.target.value || null)}

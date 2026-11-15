@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useId, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Controller, useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -31,6 +31,10 @@ export function MemoryForm({ memory, defaultTripId }: { memory?: Memory; default
   const router = useRouter()
   const { createMemory, updateMemory, memories, trips } = useData()
   const editing = Boolean(memory)
+  // Unique per form instance: Next keeps visited pages mounted (hidden), so the add and edit
+  // forms can exist together and fixed ids would make labels point at the hidden copy.
+  const uid = useId()
+  const fid = (name: string) => `${uid}-${name}`
 
   const form = useForm<MemoryFormValues>({
     resolver: zodResolver(memoryFormSchema),
@@ -149,22 +153,22 @@ export function MemoryForm({ memory, defaultTripId }: { memory?: Memory; default
         )}
 
         <div className="space-y-1.5">
-          <Label htmlFor="placeName">Place name</Label>
+          <Label htmlFor={fid("placeName")}>Place name</Label>
           <Input
-            id="placeName"
+            id={fid("placeName")}
             placeholder="e.g. Belém Tower, Grandma's garden"
             className="h-10"
             aria-invalid={!!errors.placeName}
-            aria-describedby={errors.placeName ? "placeName-error" : undefined}
+            aria-describedby={errors.placeName ? fid("placeName-error") : undefined}
             {...register("placeName")}
           />
-          <FieldError id="placeName-error" message={errors.placeName?.message} />
+          <FieldError id={fid("placeName-error")} message={errors.placeName?.message} />
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="address">Address or area {optional}</Label>
-          <Input id="address" aria-invalid={!!errors.address} aria-describedby={errors.address ? "address-error" : undefined} {...register("address")} />
-          <FieldError id="address-error" message={errors.address?.message} />
+          <Label htmlFor={fid("address")}>Address or area {optional}</Label>
+          <Input id={fid("address")} aria-invalid={!!errors.address} aria-describedby={errors.address ? fid("address-error") : undefined} {...register("address")} />
+          <FieldError id={fid("address-error")} message={errors.address?.message} />
         </div>
 
         {lat !== null && lng !== null && !showCoords ? (
@@ -195,16 +199,16 @@ export function MemoryForm({ memory, defaultTripId }: { memory?: Memory; default
           <div className="grid grid-cols-2 gap-2">
             {(["latitude", "longitude"] as const).map((k) => (
               <div key={k} className="space-y-1">
-                <Label htmlFor={k} className="text-xs capitalize">{k}</Label>
+                <Label htmlFor={fid(k)} className="text-xs capitalize">{k}</Label>
                 <Input
-                  id={k}
+                  id={fid(k)}
                   inputMode="decimal"
                   placeholder={k === "latitude" ? "38.7223" : "-9.1393"}
                   aria-invalid={!!errors[k]}
-                  aria-describedby={errors[k] ? `${k}-error` : undefined}
+                  aria-describedby={errors[k] ? fid(`${k}-error`) : undefined}
                   {...register(k, { setValueAs: (v) => (v === "" || v === null ? null : Number(v)) })}
                 />
-                <FieldError id={`${k}-error`} message={errors[k]?.message} />
+                <FieldError id={fid(`${k}-error`)} message={errors[k]?.message} />
               </div>
             ))}
           </div>
@@ -233,36 +237,36 @@ export function MemoryForm({ memory, defaultTripId }: { memory?: Memory; default
       )}
 
       <div className="space-y-1.5">
-        <Label htmlFor="note">A few words {optional}</Label>
+        <Label htmlFor={fid("note")}>A few words {optional}</Label>
         <Textarea
-          id="note"
+          id={fid("note")}
           rows={3}
           placeholder="What do you want to remember about it?"
           aria-invalid={!!errors.note}
-          aria-describedby={errors.note ? "note-error" : undefined}
+          aria-describedby={errors.note ? fid("note-error") : undefined}
           {...register("note")}
         />
-        <FieldError id="note-error" message={errors.note?.message} />
+        <FieldError id={fid("note-error")} message={errors.note?.message} />
       </div>
 
       <div className="space-y-1.5 sm:max-w-[220px]">
-        <Label htmlFor="visitedOn">Visited on</Label>
+        <Label htmlFor={fid("visitedOn")}>Visited on</Label>
         <Input
-          id="visitedOn"
+          id={fid("visitedOn")}
           type="date"
           max={todayISO()}
           aria-invalid={!!errors.visitedOn}
-          aria-describedby={errors.visitedOn ? "visitedOn-error" : undefined}
+          aria-describedby={errors.visitedOn ? fid("visitedOn-error") : undefined}
           {...register("visitedOn")}
         />
-        <FieldError id="visitedOn-error" message={errors.visitedOn?.message} />
+        <FieldError id={fid("visitedOn-error")} message={errors.visitedOn?.message} />
       </div>
 
       <div className="surface overflow-hidden rounded-2xl">
         <button
           type="button"
           aria-expanded={showMore}
-          aria-controls="more-details"
+          aria-controls={fid("more-details")}
           onClick={() => setShowMore((s) => !s)}
           className="flex w-full items-center justify-between px-4 py-3 text-[14px] font-semibold hover:bg-black/[0.02]"
         >
@@ -270,26 +274,26 @@ export function MemoryForm({ memory, defaultTripId }: { memory?: Memory; default
           <ChevronDown className={cn("size-4 transition-transform", showMore && "rotate-180")} aria-hidden />
         </button>
         {showMore && (
-          <div id="more-details" className="space-y-5 border-t border-hairline px-4 pt-4 pb-5">
+          <div id={fid("more-details")} className="space-y-5 border-t border-hairline px-4 pt-4 pb-5">
             <div className="space-y-1.5">
-              <span className="text-sm font-medium" id="tags-label">Tags</span>
+              <span className="text-sm font-medium" id={fid("tags-label")}>Tags</span>
               <Controller
                 control={control}
                 name="tags"
                 render={({ field }) => (
-                  <TagInput value={field.value} onChange={field.onChange} known={knownTags} describedBy={errors.tags ? "tags-error" : "tags-label"} />
+                  <TagInput value={field.value} onChange={field.onChange} known={knownTags} describedBy={errors.tags ? fid("tags-error") : fid("tags-label")} />
                 )}
               />
-              <FieldError id="tags-error" message={errors.tags?.message ?? errors.tags?.[0]?.message} />
+              <FieldError id={fid("tags-error")} message={errors.tags?.message ?? errors.tags?.[0]?.message} />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="tripId">Trip</Label>
+              <Label htmlFor={fid("tripId")}>Trip</Label>
               <Controller
                 control={control}
                 name="tripId"
                 render={({ field }) => (
                   <select
-                    id="tripId"
+                    id={fid("tripId")}
                     value={field.value ?? ""}
                     onChange={(e) => field.onChange(e.target.value || null)}
                     className="h-9 w-full rounded-xl border border-input bg-card px-3 text-[14px] sm:max-w-xs"

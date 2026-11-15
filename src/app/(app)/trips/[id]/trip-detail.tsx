@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useId, useState } from "react"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { toast } from "sonner"
@@ -36,6 +36,7 @@ export function TripDetail() {
   const [adding, setAdding] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [selected, setSelected] = useState<string | null>(null)
+  const uid = useId()
   const trip = getTrip(id)
 
   if (!trip) return <NotFoundState title="We couldn't find that trip" backHref="/trips" backLabel="Back to trips" />
@@ -73,8 +74,8 @@ export function TripDetail() {
       </div>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-        <section aria-labelledby="entries">
-          <h2 id="entries" className="mb-2.5 px-1 text-[15px]">Journal</h2>
+        <section aria-labelledby={`${uid}-entries`}>
+          <h2 id={`${uid}-entries`} className="mb-2.5 px-1 text-[15px]">Journal</h2>
           {entries.length === 0 ? (
             <div className="surface rounded-2xl p-6 text-center text-[13px] text-muted-foreground">
               No memories in this trip yet. Add a new one or move existing memories here.
@@ -91,8 +92,8 @@ export function TripDetail() {
           )}
         </section>
 
-        <section aria-labelledby="trip-map" className="lg:sticky lg:top-6 lg:self-start">
-          <h2 id="trip-map" className="mb-2.5 px-1 text-[15px]">Places</h2>
+        <section aria-labelledby={`${uid}-map`} className="lg:sticky lg:top-6 lg:self-start">
+          <h2 id={`${uid}-map`} className="mb-2.5 px-1 text-[15px]">Places</h2>
           <div className="overflow-hidden rounded-[22px]">
             <MemoriesMap memories={entries} selectedId={selected} onSelect={setSelected} className="h-72 lg:h-[420px]" />
           </div>
