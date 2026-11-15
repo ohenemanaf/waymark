@@ -60,6 +60,18 @@ Settings → *Reset sample data* restores the original demo.
    `http://localhost:3000/journal`) to the redirect URLs so email confirmation links land in the app.
 4. Copy the project URL and anon/publishable key into `.env.local` (and into Vercel's environment variables).
 
+### Running Supabase locally
+
+With Docker running, `npx supabase start` starts a local stack and applies the migration. For the app, put the
+printed API URL and anon key in `.env.local`:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon key from `npx supabase status`>
+```
+
+Email confirmation is off locally, so new accounts sign in straight away.
+
 ### Data model
 
 | Table | Columns |
@@ -107,6 +119,16 @@ keyboard.
 2. Add the environment variables above for Production and Preview.
 3. Deploy, then add the production URL to Supabase's auth redirect URLs.
 
+## Testing
+
+| Command | What it checks | Needs |
+| --- | --- | --- |
+| `npm test` | Search and filters, trip suggestions, validation, geo and date helpers, and that the demo data is consistent, credited and valid | Nothing |
+| `npm run test:db` | The real schema on Postgres: each person sees and edits only their own rows, can't write into someone else's trip, photos stay in the owner's folder, invalid values are rejected, and account deletion removes everything | `npx supabase start` (skipped otherwise) |
+| `npm run test:e2e` | The app in Chromium: demo browsing, adding with a photo, editing, search, delete with undo, trip suggestions, moving memories, map preview, the phone layout, and the full signed-in flow with a real photo upload, export and account deletion | `npm run build` first; the signed-in test also needs the app built against local Supabase and `NEXT_PUBLIC_SUPABASE_URL` set when running |
+
+Also `npm run lint` and `npm run typecheck`.
+
 ## Project layout
 
 ```
@@ -129,6 +151,10 @@ src/
     schema.ts              Zod schemas
     trips.ts               trip suggestions (≤3 days and ≤250 km apart) and date/cover helpers
 supabase/migrations/       schema, RLS and storage policies
+supabase/config.toml       local Supabase stack settings
+tests/unit/                Vitest unit tests
+tests/db/                  Vitest integration tests against local Supabase
+tests/e2e/                 Playwright end-to-end tests
 ```
 
 ## Accessibility notes
