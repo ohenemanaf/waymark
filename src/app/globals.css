@@ -1,0 +1,243 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Waymark design tokens
+ * - Colour means something: Lagoon marks what is interactive or selected. Everything else is neutral,
+ *   so the user's photos supply the colour.
+ * - Depth comes from translucency and blur ("liquid glass") and hairlines, never drop shadows.
+ */
+@theme inline {
+  --font-sans: var(--font-manrope);
+  --font-heading: var(--font-instrument);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-brand: var(--brand);
+  --color-brand-soft: var(--brand-soft);
+  --color-hairline: var(--hairline);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.6);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  --ease-out-soft: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+:root {
+  /* Palette */
+  --paper: #ffffff;
+  --mist: #f4f5f7;
+  --ink: #16181d;
+  --slate: #6b7079;
+  --lagoon: #0f7b8a;
+  --lagoon-wash: #e7f3f5;
+
+  --background: var(--mist);
+  --foreground: var(--ink);
+  --card: var(--paper);
+  --card-foreground: var(--ink);
+  --popover: var(--paper);
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: #ffffff;
+  --secondary: #eceef1;
+  --secondary-foreground: var(--ink);
+  --muted: #eef0f3;
+  --muted-foreground: var(--slate);
+  --accent: #eceef1;
+  --accent-foreground: var(--ink);
+  --destructive: #c4281c;
+  --brand: var(--lagoon);
+  --brand-soft: var(--lagoon-wash);
+  --border: rgb(22 24 29 / 0.09);
+  --hairline: rgb(22 24 29 / 0.07);
+  --input: rgb(22 24 29 / 0.12);
+  --ring: var(--lagoon);
+  --radius: 0.625rem;
+
+  --sidebar: transparent;
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--ink);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgb(22 24 29 / 0.05);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--hairline);
+  --sidebar-ring: var(--lagoon);
+  --chart-1: var(--lagoon);
+  --chart-2: var(--ink);
+  --chart-3: #8fb9c0;
+  --chart-4: #c9ced6;
+  --chart-5: var(--slate);
+
+  /* Glass material */
+  --glass-fill: rgb(255 255 255 / 0.62);
+  --glass-fill-strong: rgb(255 255 255 / 0.8);
+  --glass-edge: rgb(255 255 255 / 0.7);
+  --glass-rim: rgb(22 24 29 / 0.08);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply text-foreground;
+    background-color: var(--mist);
+    /* A faint ambient light behind the glass, so translucency has something to refract. */
+    background-image:
+      radial-gradient(56rem 36rem at 8% -12%, rgb(15 123 138 / 0.09), transparent 62%),
+      radial-gradient(48rem 32rem at 100% 0%, rgb(150 180 220 / 0.12), transparent 60%);
+    background-attachment: fixed;
+    font-feature-settings: "ss01", "cv11";
+  }
+  h1 {
+    @apply font-heading font-normal tracking-[-0.01em] text-foreground;
+    text-wrap: balance;
+  }
+  h2,
+  h3 {
+    @apply font-sans font-semibold tracking-[-0.015em] text-foreground;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+  ::selection {
+    background: var(--lagoon-wash);
+  }
+}
+
+@layer components {
+  /* Liquid glass: translucent, blurred, with a bright top edge and a hairline rim. No drop shadow. */
+  .glass {
+    background: var(--glass-fill);
+    -webkit-backdrop-filter: blur(22px) saturate(180%);
+    backdrop-filter: blur(22px) saturate(180%);
+    box-shadow:
+      inset 0 1px 0 var(--glass-edge),
+      inset 0 0 0 1px var(--glass-rim);
+  }
+  .glass-strong {
+    background: var(--glass-fill-strong);
+    -webkit-backdrop-filter: blur(28px) saturate(190%);
+    backdrop-filter: blur(28px) saturate(190%);
+    box-shadow:
+      inset 0 1px 0 var(--glass-edge),
+      inset 0 0 0 1px var(--glass-rim);
+  }
+  /* Darker glass for text over photographs. */
+  .glass-dark {
+    background: rgb(22 24 29 / 0.32);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    backdrop-filter: blur(18px) saturate(160%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.22),
+      inset 0 0 0 1px rgb(255 255 255 / 0.12);
+    color: #fff;
+  }
+  /* Plain content surface: white with a hairline. */
+  .surface {
+    background: var(--paper);
+    box-shadow: inset 0 0 0 1px var(--hairline);
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass,
+  .glass-strong {
+    background: rgb(255 255 255 / 0.96);
+  }
+  .glass-dark {
+    background: rgb(22 24 29 / 0.72);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  .glass-strong {
+    background: var(--paper);
+    backdrop-filter: none;
+  }
+  .glass-dark {
+    background: rgb(22 24 29 / 0.8);
+    backdrop-filter: none;
+  }
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@keyframes wm-rise {
+  from { opacity: 0; transform: translateY(6px) scale(0.99); }
+  to { opacity: 1; transform: none; }
+}
+.animate-rise {
+  animation: wm-rise 320ms var(--ease-out-soft) both;
+}
+
+/* Answers a save: the photo settles into place once. */
+@keyframes wm-saved {
+  from { opacity: 0.4; transform: scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+.animate-saved {
+  animation: wm-saved 600ms var(--ease-out-soft) both;
+}
+
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.mapboxgl-ctrl-logo, .mapboxgl-ctrl-attrib { font-size: 10px; }
+.mapboxgl-ctrl-group { border-radius: 9999px !important; box-shadow: none !important; }
